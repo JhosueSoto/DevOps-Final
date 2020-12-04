@@ -1,0 +1,64 @@
+﻿@page "/Listar"
+<h3>Lista de detenidos</h3>
+
+<table class="table">
+    <thead class="bg-secondary" style="color:aliceblue">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Placa</th>
+            <th scope="col">Marca</th>
+            <th scope="col">Modelo</th>
+            <th scope="col">Color</th>
+            <th scope="col">Descripción</th>
+
+
+        </tr>
+
+    </thead>
+    <tbody>
+        @using(var db=new DB())
+        {
+            @foreach(var x in db.vehiculos.ToList())
+            {
+        <tr>
+            <th>@x.vehiculoid</th>
+            <th>@x.placa</th>
+            <th>@x.marca</th>
+            <th>@x.modelo</th>
+            <th>@x.color</th>
+            <th>@x.descripcion</th>
+
+
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+<br />
+<table class="table">
+    <thead class="bg-secondary" style="color:aliceblue">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Apellido</th>
+            <th scope="col">Lugar</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @using(var db=new DB())
+        {
+            @foreach(var x in db.personas.ToList())
+            {
+        <tr>
+            <th>@x.personaid</th>
+            <th>@x.nombre</th>
+            <th>@x.apellido</th>
+            <th>@x.lugar</th>
+
+        </tr>
+            }
+        }
+    </tbody>
+
+</table>

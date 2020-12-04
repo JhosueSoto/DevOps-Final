@@ -1,0 +1,139 @@
+﻿@page "/Registrar" 
+@inject HttpClient http
+<div class="container">
+    <div class="row m-md-3">
+        <div class=" card card-body col-2">
+            <h3>Registrar vehiculo</h3>
+            <form method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Placa del auto</label>
+                    <input type="Text" @bind="placa" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Modelo del auto</label>
+                    <input type="Text" @bind="modelo" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Color del auto</label>
+                    <input type="Text" @bind="color" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Marca del auto</label>
+                    <input type="Text" @bind="marca" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Descripcion</label>
+                    <input type="Text" @bind="descripcion" class="form-control" />
+                </div>
+
+            </form>
+        </div>
+        <div class="col col-md-8">
+            <h3>Personas detenidas</h3>
+            <br />
+            <div>
+                <label>Inserte cedula del detenido</label>
+                <input type="number" @bind="call" class="form-control" />
+                <br />
+                <button @onclick="resultado" class="btn btn-secondary">Buscar</button>
+            </div>
+            <div>
+                <label>Nombre: </label>
+                <label>@datos.Nombres</label>
+            </div>
+            <div>
+                <label>Apellido: </label>
+                <label>@datos.Apellido1</label>
+            </div>
+            <div class="form-group">
+                <label>Lugar donde fue detenido</label>
+                <input type="text" @bind="lugar" class="form-control" />
+            </div>
+            <div>
+                <button @onclick="addpers" class="text-center btn btn-primary">Agregar persona</button>
+                <button @onclick="todo" class="text-center btn btn-outline-success">Guardar todo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    public class api
+    {
+        public string Nombres { get; set; } = "";
+        public string Apellido1 { get; set; } = "";
+    }
+    api datos = new api();
+    string call = "";
+    private async Task resultado()
+    {
+        datos = await http.GetJsonAsync<api>("https://api.adamix.net/apec/cedula/" + call);
+    }
+    string placa, modelo, marca, color, descripcion, lugar;
+    bool dec = false;
+    int id;
+    void addpers()
+    {
+        if(dec==false)
+        {
+            var db = new DB();
+            var carro = new vehiculo();
+            var pers = new persona();
+
+            carro.placa = placa;
+            carro.modelo = modelo;
+            carro.marca = marca;
+            carro.color = color;
+            carro.descripcion = descripcion;
+            id = carro.vehiculoid;
+            db.Add(carro);
+            db.SaveChanges();
+
+            pers.nombre = datos.Nombres;
+            pers.apellido = datos.Apellido1;
+            pers.lugar = lugar;
+            db.Add(pers);
+            db.SaveChanges();
+        }
+        else
+        {
+            var db = new DB();
+            var pers = new persona();
+
+            pers.nombre = datos.Nombres;
+            pers.apellido = datos.Apellido1;
+            pers.lugar = lugar;
+            db.Add(pers);
+            db.SaveChanges();
+        }
+
+    }
+    void todo()
+    {
+        dec = true;
+        var db = new DB();
+        var carro = new vehiculo();
+
+        carro.placa = placa;
+        carro.modelo = modelo;
+        carro.marca = marca;
+        carro.color = color;
+        carro.descripcion = descripcion;
+        id = carro.vehiculoid;
+        db.Add(carro);
+        db.SaveChanges();
+
+        do
+        {
+            var pers = new persona();
+
+            pers.nombre = datos.Nombres;
+            pers.apellido = datos.Apellido1;
+            pers.lugar = lugar;
+            db.Add(pers);
+        } while (dec == false);
+        db.SaveChanges();
+
+    }
+}
